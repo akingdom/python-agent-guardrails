@@ -12,6 +12,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 # License
 # ---------------------------------------------------------------------------
 
+
 def test_license_exists() -> None:
     assert (REPO_ROOT / "LICENSE.md").exists(), "LICENSE.md must exist"
 
@@ -42,6 +43,7 @@ def test_license_links_to_original() -> None:
 # ---------------------------------------------------------------------------
 # Structure
 # ---------------------------------------------------------------------------
+
 
 def test_agents_md_exists() -> None:
     assert (REPO_ROOT / "AGENTS.md").exists(), "AGENTS.md must exist at the repo root"
