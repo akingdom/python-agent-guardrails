@@ -67,7 +67,11 @@ incomplete one.
 
 ## How to use this
 
-1. Copy `AGENTS.md` to the root of your Python project.
+1. Copy `AGENTS.md`, `.agents/`, `.github/`, and
+   `.pre-commit-config.yaml` to the root of your Python project. You may
+   also copy `LICENSE.md`; if you do, please keep the link to the original
+   repo, or replace the file with your own licence. See `LICENSE.md` for
+   the exact ask.
 2. **Edit the Project section** for your actual stack. The values shipped
    in the template are placeholders.
 3. Copy `.agents/skills/` if your agent supports on-demand skills
@@ -107,9 +111,10 @@ Two caveats:
   checking does not become meaningful until real code lands in that
   package. The package exists to make the template's own CI pass, not to
   be part of your project. Delete it when copying.
-- The GitHub Actions in `.github/workflows/verify.yml` are pinned to
-  commit SHAs. Verify the SHAs against the upstream release pages when
-  upgrading.
+- The GitHub Actions in `.github/workflows/verify.yml` use version tags
+  (`@v4`, `@v6`) rather than commit SHAs. For a repo that will run
+  workflows on untrusted pull requests, pin to SHAs instead — see the
+  upstream release pages for `actions/checkout` and `astral-sh/setup-uv`.
 
 ## Provenance
 
