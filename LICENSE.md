@@ -1,4 +1,6 @@
-MIT License
+# License
+
+## MIT License
 
 Copyright (c) 2026 Andrew Kingdom
 
@@ -19,3 +21,14 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+---
+
+## Best practices
+
+Use these files in your projects freely. If you distribute them (modified or
+not), please include this license and link to the original:
+https://github.com/akingdom/python-agent-guardrails
+
+If you modify substantially, a note of changes is appreciated — it helps
+others understand what version they're using.
