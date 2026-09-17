@@ -1,141 +1,122 @@
 # python-agent-guardrails
 
-A minimal, human-curated, three-layer guardrails template for AI coding
-agents working in Python repositories.
+Your AI agent refactored forty files when you asked for a typo fix.
 
-It is not a package. It is not a framework. It is a small set of files you
-copy into a Python project so that AI agents (Claude Code, Cursor, Codex,
-Cline, Gemini CLI, and others) behave more like disciplined engineers and
-less like enthusiastic interns.
+It said tests passed. They hadn't run.
 
-## Why three layers?
+It created a base class, an ABC, and a factory for a function you'd
+delete next week.
 
-Guardrails fail when they are only prose. An agent saying "I ran the tests"
-is not evidence that it ran the tests. Three primary findings inform this
-template:
+Six files fix this. You copy them into your Python project, edit one
+section, and the agent stops behaving like an enthusiastic intern.
 
-- *On the Impact of AGENTS.md Files on the Efficiency of AI Coding Agents*
-  (Lulla et al., arXiv 2601.20404): persistent repository instructions
-  reduced median wall-clock time by ~28.6% and median output tokens by
-  ~16.6% in paired Codex experiments across 124 pull requests. The study
-  measured efficiency, not correctness, and used a single agent on small
-  PRs (under 100 LOC changes).
+## The one idea
 
-- *Evaluating AGENTS.md: Are Repository-Level Context Files Helpful for
-  Coding Agents?* (Gloaguen et al., ETH Zurich): repository-level context
-  files gave marginal correctness gains; LLM-generated and human-written
-  files performed similarly; inference cost rose roughly 20%. The format
-  is an efficiency trade-off, not a correctness fix.
+An agent saying "I ran the tests" is not evidence that it ran the tests.
 
-- *From Confident Closing to Silent Failure: Characterizing False Success
-  in LLM Agents* (Advani, arXiv 2606.09863): among AppWorld coding
-  trajectories that explicitly claimed completion, 75.8% of failures were
-  false-success claims — the agent said it was done while the environment
-  disagreed. LLM judges were unreliable at detecting them (AUROC 0.54 on
-  AppWorld API-call traces). Lightweight TF-IDF classifiers outperformed
-  the judges.
+Every guardrail in this template is a variation on that sentence. Prose
+guides the agent. Machinery checks what the agent actually did. The
+second half is what most prompt collections miss.
 
-The implication: an instruction file is worth having (it is cheap, and it
-measurably saves time), but no instruction file — however well written —
-can substitute for independent verification. So this template separates
-three jobs:
+## What you get
 
-| Layer | Job                                                            | Files |
-|-------|----------------------------------------------------------------|-------|
-| 1     | **Intent** — what should happen                                | `AGENTS.md` |
-| 2     | **Workflow** — how the agent should work                       | `.agents/skills/*/SKILL.md` |
-| 3     | **Evidence** — what can independently establish what happened  | `.github/workflows/`, `.pre-commit-config.yaml` |
+| Layer | Does | Files |
+|---|---|---|
+| **Intent** | Tells the agent what should happen | `AGENTS.md` |
+| **Workflow** | Tells the agent how to work | `.agents/skills/` |
+| **Evidence** | Checks what happened | `.github/workflows/`, `.pre-commit-config.yaml` |
 
-Prose guides. Skills provide procedure. Tests and tooling provide evidence.
-Human review resolves what machines cannot establish.
+The first two are markdown. The third runs whether the agent cooperates
+or not.
 
-## Two skills, not five
+## Install
 
-`waitsec`, the PHP/Laravel project this template draws from, defined five
-core guardrails: ask-first, anti-overengineering, small-diff, debug-first,
-verify-first. This template keeps only two of them as on-demand skills:
+One command, from anywhere:
 
-- ask-first, anti-overengineering, and small-diff are always relevant, so
-  they live as numbered rules in `AGENTS.md`.
-- debug-first and verify-first are conditional — they apply when a failure
-  has occurred or a task is being finished — so they live as skills that
-  load on demand.
+    uvx python-agent-guardrails /path/to/your-project
 
-This is deliberate. Skills are on-demand context; always-on rules belong
-in the always-loaded file. It is a smaller design than waitsec's, not an
-incomplete one.
+Or install once and reuse:
 
-## How to use this
+    pip install python-agent-guardrails
+    pag /path/to/your-project
 
-From a clone of this repo, let the script do the copy:
+Or, from a clone:
 
     python install.py /path/to/your-project
 
-It copies the six template files, refuses to overwrite anything that
-already exists, and renames `LICENSE.md` to
-`LICENSE-python-agent-guardrails.md` on the way so it won't collide with
-your project's own licence. Run `python install.py -h` for usage, or
-`--force` to overwrite existing files.
+All three do the same thing. They refuse to overwrite anything, rename
+`LICENSE.md` so it can't collide with yours, and print the one file you
+need to edit — the Project section of `AGENTS.md` — with a command to
+open it.
 
-Or copy by hand. Copy `AGENTS.md`, `.agents/`, `.github/`, and
-`.pre-commit-config.yaml` to the root of your Python project. You may also
-copy `LICENSE.md`; if you do, please keep the link to the original repo,
-or replace the file with your own licence.
+The install takes under a second. Editing `AGENTS.md` for your stack
+takes a minute. After that you can uninstall the package; the files
+stayed behind.
 
-Whichever path you took, the next step is the same:
+## What changes
 
-**Edit the Project section** of `AGENTS.md` for your actual stack. The
-values shipped in the template are placeholders.
+Four behaviours stop happening:
 
-Then:
+**The agent asks before it builds.** If your prompt is missing decisions
+that materially change the implementation — where files go, what shape
+the data has — it asks 1–3 direct questions first. Otherwise it inspects
+your repo and follows your existing conventions.
 
-- Copy `.agents/skills/` if your agent supports on-demand skills
-  (Claude Code, Cursor, Gemini CLI, and others). Otherwise skip it;
-  skills are optional depth, not required scaffolding.
-- Copy `.github/workflows/verify.yml` and `.pre-commit-config.yaml` into
-  your project. Adjust the commands to whatever your project actually runs.
-- Run the checks once locally on a clean tree before the agent ever
-  touches the repo. If they don't pass on a clean tree, they won't tell
-  you anything useful when the agent starts editing.
+**The agent touches less.** Only what the task requires. No reformatting
+of untouched files. No dependency added for a three-line change.
 
-## What this template deliberately does *not* do
+**The agent reads the traceback.** Before proposing a fix. No
+`except Exception: pass`. No guessing.
 
-- It does not install itself into your project. There is no `pip install`
-  in your project's dependency list. `install.py` is a convenience for
-  copying the files; the files are data, not something you import.
-- It does not include a plugin system or a DSL.
-- It does not auto-generate `AGENTS.md`. Human authorship is the point.
-- It does not enforce diff size by file count. "Small diff" means
-  proportional scope, not "fewer than N files."
-- It does not treat the agent's own report as evidence of anything.
-- It does not claim CI proves correctness. CI proves the configured checks
-  passed. A test can pass because the wrong behaviour wasn't tested; a
-  linter can pass while the feature is wrong; a type checker can pass
-  while the algorithm is wrong. Human review remains the arbiter for
-  intent that cannot be mechanically specified.
+**The agent shows its work.** The exact command it ran and its result,
+before it says "done."
 
-If you find yourself extending this template into a project of its own,
-you have probably violated its own methodology. Keep it small.
+None of these are novel. They're the things a careful engineer does by
+default. The template exists because agents don't.
 
-## A note on this repo's own CI
+## Why you can trust it
 
-This repository ships a minimal Python project (`pyproject.toml`, `src/`,
-`tests/`) so its own CI runs something real. Two caveats:
+Three studies, none of which measure this template. They measure the
+ideas it's built on.
 
-- `mypy --strict` passes trivially against
-  `src/template_selftest/__init__.py`, which is a docstring only. Type
-  checking does not become meaningful until real code lands in that
-  package. The package exists to make the template's own CI pass, not to
-  be part of your project. Delete it when copying.
-- The GitHub Actions in `.github/workflows/verify.yml` use version tags
-  (`@v4`, `@v6`) rather than commit SHAs. For a repo that will run
-  workflows on untrusted pull requests, pin to SHAs instead — see the
-  upstream release pages for `actions/checkout` and `astral-sh/setup-uv`.
+**Persistent repo instructions save time.** Paired Codex experiments
+across 124 pull requests found median wall-clock time down ~28.6% and
+median output tokens down ~16.6% when an `AGENTS.md` was present.
+*On the Impact of AGENTS.md Files on the Efficiency of AI Coding Agents*
+(Lulla et al., arXiv 2601.20404). Efficiency, not correctness, on small
+changes.
 
-## Provenance
+**But they don't fix correctness on their own.** Repository-level
+context files gave marginal correctness gains, and LLM-written files
+performed about the same as human-written ones. Inference cost rose
+~20%. *Evaluating AGENTS.md* (Gloaguen et al., ETH Zurich).
 
-Assembled from a review of `waitsec` (Packagist, PHP/Laravel) and the
-surrounding research on AGENTS.md, instruction-following, and false-success
-behaviour in coding agents. The PHP/Laravel framing of `waitsec` is
-discarded; the underlying engineering discipline is kept and adapted to
-Python tooling.
+**And agents lie about success.** Among AppWorld coding trajectories
+that claimed completion, 75.8% of failures were false-success claims —
+the agent said it was done while the environment disagreed. LLM judges
+missed most of them (AUROC 0.54). TF-IDF classifiers beat the judges.
+*From Confident Closing to Silent Failure* (Advani, arXiv 2606.09863).
+
+The third finding is why the third layer exists. If the agent's report
+can't be trusted, verification has to live outside the agent.
+
+## Where it comes from
+
+`waitsec` (Packagist, PHP/Laravel) defined five rules: ask-first,
+anti-overengineering, small-diff, debug-first, verify-first. Three are
+always relevant, so they live in `AGENTS.md`. Two are conditional —
+they apply when a failure has occurred, or a task is finishing — so
+they load as skills. The PHP framing is dropped; the discipline is kept.
+
+## For maintainers
+
+Template files live twice: at the repo root, where agents and humans
+read them, and at `src/pag/template/`, which ships in the wheel. Root
+is canonical. `scripts/sync-template.sh` copies root → package.
+`tests/test_template_sync.py` fails if they drift.
+
+`scripts/publish_prep_v3.sh` runs release checks. It doesn't commit,
+tag, or push — the git step is manual, via GitHub Desktop, on purpose.
+
+CI uses version tags (`@v4`, `@v6`) rather than SHAs. Pin to SHAs
+before running on untrusted pull requests.
