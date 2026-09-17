@@ -67,26 +67,43 @@ incomplete one.
 
 ## How to use this
 
-1. Copy `AGENTS.md`, `.agents/`, `.github/`, and
-   `.pre-commit-config.yaml` to the root of your Python project. You may
-   also copy `LICENSE.md`; if you do, please keep the link to the original
-   repo, or replace the file with your own licence. See `LICENSE.md` for
-   the exact ask.
-2. **Edit the Project section** for your actual stack. The values shipped
-   in the template are placeholders.
-3. Copy `.agents/skills/` if your agent supports on-demand skills
-   (Claude Code, Cursor, Gemini CLI, and others). Otherwise skip it; skills
-   are optional depth, not required scaffolding.
-4. Copy `.github/workflows/verify.yml` and `.pre-commit-config.yaml` into
-   your project. Adjust the commands to whatever your project actually runs.
-5. Run the checks once locally on a clean tree before the agent ever
-   touches the repo. If they don't pass on a clean tree, they won't tell
-   you anything useful when the agent starts editing.
+From a clone of this repo, let the script do the copy:
+
+    python install.py /path/to/your-project
+
+It copies the six template files, refuses to overwrite anything that
+already exists, and renames `LICENSE.md` to
+`LICENSE-python-agent-guardrails.md` on the way so it won't collide with
+your project's own licence. Run `python install.py -h` for usage, or
+`--force` to overwrite existing files.
+
+Or copy by hand. Copy `AGENTS.md`, `.agents/`, `.github/`, and
+`.pre-commit-config.yaml` to the root of your Python project. You may also
+copy `LICENSE.md`; if you do, please keep the link to the original repo,
+or replace the file with your own licence.
+
+Whichever path you took, the next step is the same:
+
+**Edit the Project section** of `AGENTS.md` for your actual stack. The
+values shipped in the template are placeholders.
+
+Then:
+
+- Copy `.agents/skills/` if your agent supports on-demand skills
+  (Claude Code, Cursor, Gemini CLI, and others). Otherwise skip it;
+  skills are optional depth, not required scaffolding.
+- Copy `.github/workflows/verify.yml` and `.pre-commit-config.yaml` into
+  your project. Adjust the commands to whatever your project actually runs.
+- Run the checks once locally on a clean tree before the agent ever
+  touches the repo. If they don't pass on a clean tree, they won't tell
+  you anything useful when the agent starts editing.
 
 ## What this template deliberately does *not* do
 
-- It does not install itself. There is no `pip install`.
-- It does not include a CLI, a plugin system, or a DSL.
+- It does not install itself into your project. There is no `pip install`
+  in your project's dependency list. `install.py` is a convenience for
+  copying the files; the files are data, not something you import.
+- It does not include a plugin system or a DSL.
 - It does not auto-generate `AGENTS.md`. Human authorship is the point.
 - It does not enforce diff size by file count. "Small diff" means
   proportional scope, not "fewer than N files."
@@ -100,11 +117,10 @@ incomplete one.
 If you find yourself extending this template into a project of its own,
 you have probably violated its own methodology. Keep it small.
 
-## A note on the template's own CI
+## A note on this repo's own CI
 
-The template ships a minimal Python project (`pyproject.toml`,
-`src/template_selftest/`, `tests/`) so that its own CI runs something real.
-Two caveats:
+This repository ships a minimal Python project (`pyproject.toml`, `src/`,
+`tests/`) so its own CI runs something real. Two caveats:
 
 - `mypy --strict` passes trivially against
   `src/template_selftest/__init__.py`, which is a docstring only. Type

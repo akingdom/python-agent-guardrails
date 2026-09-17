@@ -2,6 +2,9 @@
 #
 # Running the full test suite here encourages `git commit --no-verify`, which
 # defeats the point. Keep this layer cheap so it actually gets used.
+#
+# The rev below should match whatever `uv.lock` resolves for ruff.
+# Check with: uv run ruff --version
 
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit

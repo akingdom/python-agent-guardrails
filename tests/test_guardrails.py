@@ -8,11 +8,6 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
 
-# ---------------------------------------------------------------------------
-# License
-# ---------------------------------------------------------------------------
-
-
 def test_license_exists() -> None:
     assert (REPO_ROOT / "LICENSE.md").exists(), "LICENSE.md must exist"
 
@@ -38,11 +33,6 @@ def test_license_links_to_original() -> None:
     assert "github.com/akingdom/python-agent-guardrails" in text, (
         "LICENSE.md must point readers to the original repository"
     )
-
-
-# ---------------------------------------------------------------------------
-# Structure
-# ---------------------------------------------------------------------------
 
 
 def test_agents_md_exists() -> None:
